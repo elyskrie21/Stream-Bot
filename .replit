@@ -1,0 +1,2 @@
+language = "undefined"
+run = "pipenv run python bot.py"

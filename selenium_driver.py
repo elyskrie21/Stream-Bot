@@ -26,6 +26,9 @@ class SeleniumDriver():
 
     getTitle = lambda self: self.driver.title
 
+    def get(self, url):
+      return self.driver.get(url)
+      
     def getByType(self, locatorType):
         locatorType = locatorType.lower()
         if locatorType == 'id':
@@ -60,7 +63,7 @@ class SeleniumDriver():
         try:
             locatorType = locatorType.lower()
             byType = self.getByType(locatorType)
-            elements = self.driver.find_elements(byType, locator):
+            elements = self.driver.find_elements(byType, locator)
             self.log.info(f'Elements found with locator: ${locator} and locatorType: ${locatorType}')
         except:
             self.log.info(f'Elements were not found with locator: ${locator} and locatortype: ${locatorType}')
