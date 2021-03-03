@@ -4,31 +4,32 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import *
 import logging
-import sys 
+import sys
+
 
 class SeleniumDriver():
     def __init__(self, driver, is_verbose=False):
         self.driver = driver
-        
+
         if (is_verbose):
             self.log_level = logging.DEBUG
         else:
             self.log_level = logging.INFO
-        log_format = logging.Formatter('[%(asctime)s] [%(levelname)s] - %(message)s')
+        log_format = logging.Formatter(
+            '[%(asctime)s] [%(levelname)s] - %(message)s')
         self.log = logging.getLogger(__name__)
         self.log.setLevel(self.log_level)
 
-        #writing to stdout
+        # writing to stdout
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(self.log_level)
         handler.setFormatter(log_format)
         self.log.addHandler(handler)
 
-    getTitle = lambda self: self.driver.title
+    def getTitle(self): return self.driver.title
+    def get(self, url): return self.driver.get(url)
+    def getPageSource(self): return self.driver.page_source
 
-    def get(self, url):
-      return self.driver.get(url)
-      
     def getByType(self, locatorType):
         locatorType = locatorType.lower()
         if locatorType == 'id':
@@ -44,17 +45,19 @@ class SeleniumDriver():
         else:
             self.log.info(f'Locator type ${locatorType} not correct/supported')
         return False
-    
-    def getElement(self, locator, locatorType='id'):
-        element = None 
 
-        try: 
+    def getElement(self, locator, locatorType='id'):
+        element = None
+
+        try:
             locatorType = locatorType.lower()
             byType = self.getByType(locatorType)
             element = self.driver.find_element(byType, locator)
-            self.log.info(f'Element found with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'Element found with locator: ${locator} and locatorType: ${locatorType}')
         except:
-            self.log.info(f'Element was not found with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'Element was not found with locator: ${locator} and locatorType: ${locatorType}')
         return element
 
     def getElements(self, locator, locatorType='id'):
@@ -64,28 +67,34 @@ class SeleniumDriver():
             locatorType = locatorType.lower()
             byType = self.getByType(locatorType)
             elements = self.driver.find_elements(byType, locator)
-            self.log.info(f'Elements found with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'Elements found with locator: ${locator} and locatorType: ${locatorType}')
         except:
-            self.log.info(f'Elements were not found with locator: ${locator} and locatortype: ${locatorType}')
+            self.log.info(
+                f'Elements were not found with locator: ${locator} and locatortype: ${locatorType}')
         return elements
-    
+
     def elementClick(self, locator, locatorType='id'):
         try:
             element = self.getElement(locator, locatorType)
             element.click()
-            self.log.info('clicked on element with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'clicked on element with locator: ${locator} and locatorType: ${locatorType}')
         except:
-            self.log.info('Cannot click on the element with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'Cannot click on the element with locator: ${locator} and locatorType: ${locatorType}')
             print_stack()
 
     def sendKeys(self, data, locator, locatorType='id'):
         try:
             element = self.getElement(locator, locatorType)
             element.send_keys(data)
-            self.log.info('Sent data on element with locator: ${locator} and locatorType: ${locatorType}')
+            self.log.info(
+                f'Sent data on element with locator: ${locator} and locatorType: ${locatorType}')
         except:
-            self.log.info1('Cannot send data on element with locator: ${locator} and locatorType: ${locatorType}')
-            print_stack()
+            self.log.info(
+                f'Cannot send data on element with locator: ${locator} and locatorType: ${locatorType}')
+            # print_stack()
 
     def isElementPresent(self, locator, locatorType='id'):
         try:
@@ -98,7 +107,7 @@ class SeleniumDriver():
                 return False
         except:
             self.log.info('Element not found')
-            return False 
+            return False
 
     def elementPresenceCheck(self, locator, locatorType='id'):
         try:
@@ -108,18 +117,20 @@ class SeleniumDriver():
                 return True
             else:
                 self.log.info('Element not found')
-                return False 
+                return False
         except:
             self.log.info('Element not found')
-            return False 
-    
+            return False
+
     def waitForElement(self, locator, locatorType='id', timeout=10, pollFrquency=0.5):
         element = None
 
         try:
             byType = self.getByType(locatorType)
-            self.log.info(f'Waiing for maximum :: ${str(timeout)} :: seconds for element to be clickable')
-            wait = WebDriverWait(self.driver, timeout, poll_frequency=pollFrquency, ignored_exceptions=[NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException])
+            self.log.info(
+                f'Waiing for maximum :: ${str(timeout)} :: seconds for element to be clickable')
+            wait = WebDriverWait(self.driver, timeout, poll_frequency=pollFrquency, ignored_exceptions=[
+                                 NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException])
             element = wait.until(EC.element_to_be_clickable((byType, locator)))
             self.log.info('Element appeared on the web page')
         except:
